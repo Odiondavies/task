@@ -16,9 +16,9 @@ def greeting():
         
         visitor_name = request.args.get("visitor_name", default='Guest', type=str)
         client_info = get_client_city(client_ip)
-        city = client_info.get("city")
-        lat = client_info.get("lat")
-        lon = client_info.get('lon')
+        city = client_info.get("city", "New York")  # Default to New York if city is not available
+        lat = client_info.get("lat", 40.7128)       # Default to New York latitude if not available
+        lon = client_info.get('lon', -74.0060)      # Default to New York longitude if not available
         
         if lat and lon:
             weather_info = get_weather_info(lat, lon)
