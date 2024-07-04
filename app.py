@@ -11,14 +11,14 @@ OPENWEATHERMAP_API_KEY = 'a53a8066ad9b9ec896f571174cc52a25'
 @app.route("/api/hello")
 def greeting():
     try:
-        # Get client IP address, considering proxies and load balancers
         client_ip = request.headers.get('X-Forwarded-For', request.remote_addr).split(',')[0].strip()
         
         visitor_name = request.args.get("visitor_name", default='Guest', type=str)
+        visitor_name = visitor_name.strip('"')  # Ensure visitor_name is properly stripped of quotes
         client_info = get_client_city(client_ip)
-        city = client_info.get("city", "New York")  # Default to New York if city is not available
-        lat = client_info.get("lat", 40.7128)       # Default to New York latitude if not available
-        lon = client_info.get('lon', -74.0060)      # Default to New York longitude if not available
+        city = client_info.get("city", "New York")
+        lat = client_info.get("lat", 40.7128)
+        lon = client_info.get('lon', -74.0060)
         
         if lat and lon:
             weather_info = get_weather_info(lat, lon)
@@ -50,16 +50,16 @@ def get_client_city(ip_address):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             data = response.json()
-            city = data.get("city", "New York")  # Default to New York if city is not available
+            city = data.get("city", "New York")
             loc = data.get("loc", "").split(',')
             if len(loc) == 2:
                 lat = loc[0]
                 lon = loc[1]
                 return {"city": city, "lat": lat, "lon": lon}
-        return {"city": "New York", "lat": 40.7128, "lon": -74.0060}  # Default to New York coordinates
+        return {"city": "New York", "lat": 40.7128, "lon": -74.0060}
     except Exception as e:
         print(f"Error getting city information: {str(e)}")
-        return {"city": "New York", "lat": 40.7128, "lon": -74.0060}  # Default to New York coordinates
+        return {"city": "New York", "lat": 40.7128, "lon": -74.0060}
 
 def get_weather_info(latitude, longitude):
     try:
@@ -80,3 +80,4 @@ def get_weather_info(latitude, longitude):
 
 if __name__ == "__main__":
     app.run(debug=True)
+        
